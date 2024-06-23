@@ -14,7 +14,9 @@ function frameTick() {
             blockDirections[elementId] = { x: randomX, y: randomY };
         }
 
-        if (blockCoords[elementId].movable == 0) { continue; }
+        /*if (blockCoords[elementId].movable == 0) { 
+            placeElement(element, blockCoords[elementId].x, blockCoords[elementId].y);
+            continue; }*/
         setCollisionGrid(element, elementId, 255);
 
         //move block
@@ -55,32 +57,58 @@ function findCollisions(element, elementId) {
     let width = element.offsetWidth;
     let height = element.offsetHeight;
 
-    for (let i = 0; i < 2; i++) {
-        y = blockCoords[elementId].y + i * height;
-        for (let x = blockCoords[elementId].x; x < blockCoords[elementId].x + width; x++) {
+    if (blockCoords[elementId].isCircle != 1) {
+        for (let i = 0; i < 2; i++) {
+            y = blockCoords[elementId].y + i * height;
+            for (let x = blockCoords[elementId].x; x < blockCoords[elementId].x + width; x++) {
+                let index = get2dArrayIndex(x, y);
+                if (collisionGrid[index] !== 255 && collisionGrid[index] !== elementId) {
+                    if (i == 0) {
+                        collisions["up"].push(collisionGrid[index]);
+                    } else {
+                        collisions["down"].push(collisionGrid[index]);
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < 2; i++) {
+            x = blockCoords[elementId].x + i * width;
+            for (let y = blockCoords[elementId].y; y < blockCoords[elementId].y + height; y++) {
+                let index = get2dArrayIndex(x, y);
+                if (collisionGrid[index] !== 255 && collisionGrid[index] !== elementId) {
+                    if (i == 0) {
+                        collisions["left"].push(collisionGrid[index]);
+                    } else {
+                        collisions["right"].push(collisionGrid[index]);
+                    }
+                }
+            }
+        }
+    } else {
+        let radius = width / 2;
+        let centerX = blockCoords[elementId].x + radius;
+        let centerY = blockCoords[elementId].y + height / 2;
+        var x, y;
+
+        for (let angle = 0; angle < 360; angle++) {
+            x = Math.floor(centerX + radius * Math.cos(Math.PI * 2 * angle / 360));
+            y = Math.floor(centerY + radius * Math.cos(Math.PI * 2 * angle / 360));
             let index = get2dArrayIndex(x, y);
             if (collisionGrid[index] !== 255 && collisionGrid[index] !== elementId) {
-                if (i == 0) {
+                if (x < centerX) {
+                    collisions["left"].push(collisionGrid[index]);
+                } else {
+                    collisions["right"].push(collisionGrid[index]);
+                }
+                if (y < centerY) {
                     collisions["up"].push(collisionGrid[index]);
                 } else {
                     collisions["down"].push(collisionGrid[index]);
                 }
             }
         }
-    }
 
-    for (let i = 0; i < 2; i++) {
-        x = blockCoords[elementId].x + i * width;
-        for (let y = blockCoords[elementId].y; y < blockCoords[elementId].y + height; y++) {
-            let index = get2dArrayIndex(x, y);
-            if (collisionGrid[index] !== 255 && collisionGrid[index] !== elementId) {
-                if (i == 0) {
-                    collisions["left"].push(collisionGrid[index]);
-                } else {
-                    collisions["right"].push(collisionGrid[index]);
-                }
-            }
-        }
     }
     return collisions;
 }
@@ -160,10 +188,10 @@ blockCoords[2] = { x: 600, y: 400 };
 blockCoords[3] = { x: 600, y: 200 };
 blockCoords[4] = { x: 600, y: 400 };
 
-blockCoords["kiwi"] = { x: 50, y: 50, movable: 1 };
+blockCoords["kiwi"] = { x: 50, y: 50, movable: 1, isCircle: 0 };
 blockCoords["mail"] = { x: 1000, y: 50, movable: 1 };
 blockCoords["linkedin"] = { x: 1000, y: 600, movable: 1 };
-blockCoords["github"] = { x: 50, y: 600, movable: 1 };
+blockCoords["github"] = { x: 50, y: 600, movable: 1, isCircle: 0 };
 
 var interval = 6;
 
@@ -177,7 +205,7 @@ for (let i = 0; i < imageElements.length; i++) {
 
 function speedUp() {
     if (interval < 2) {
-        blockCoords["kiwi"] = { x: blockCoords["kiwi"].x, y: blockCoords["kiwi"].y, movable: 0 };
+        blockCoords["kiwi"] = { ...blockCoords["kiwi"], movable: 0 };
         blockDirections["mail"] = { x: blockDirections["mail"].x * 2, y: blockDirections["mail"].y * 2 };
         blockDirections["github"] = { x: blockDirections["github"].x * 2, y: blockDirections["github"].y * 2 };
         blockDirections["linkedin"] = { x: blockDirections["linkedin"].x * 2, y: blockDirections["linkedin"].y * 2 };
