@@ -1,46 +1,24 @@
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
 
-.block {
+.bouncy {
   z-index: 1000;
   user-select: none;
   transform-origin: top left;
   position: absolute;
   display: block;
   margin: 0;
-  padding: 15px;
+  padding: 1vw;
   border: 2px solid #007bff;
   background-color: #eee;
   text-align: center;
-}
-
-#kiwi {
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
-  width: 10%;
 }
 
-#mail {
-  border-radius: 50%;
-  height: auto;
-  width: 10%;
-}
-
-#linkedin {
-  border-radius: 50%;
-  height: auto;
-  width: 10%;
-}
-
-#github {
-  border-radius: 50%;
-  height: auto;
-  width: 10%;
-}
-
-#image {
+.bouncy * {
   z-index: -1;
   user-select: none;
   border-radius: inherit;
